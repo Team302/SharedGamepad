@@ -19,6 +19,7 @@
 //==================================================================================
 
 // C++ Includes
+#include <assert.h>
 #include <cmath>
 #include <string>
 #include <units/dimensionless.h>
@@ -33,11 +34,10 @@
 #include <gamepad/axis/LinearProfile.h>
 #include <gamepad/axis/CubedProfile.h>
 #include <gamepad/axis/DeadbandValue.h>
+#include <gamepad/axis/InvertAxis.h>
 #include <gamepad/axis/NoDeadbandValue.h>
 #include <gamepad/axis/ScaledDeadbandValue.h>
 #include <gamepad/axis/SquaredProfile.h>
-
-#include <utils/Logger.h>
 
 // Third Party Includes
 
@@ -61,12 +61,10 @@ AnalogAxis::AnalogAxis
     m_axis( axisID ),
     m_profile( LinearProfile::GetInstance() ),  
     m_deadband( NoDeadbandValue::GetInstance() ), 
-    m_scale( new ScaledAxis()  )
+    m_scale( new ScaledAxis()  ),
+    m_inversion( new InvertAxis())
 {
-    if ( flipAxis )
-    {
-        m_scale->SetScaleFactor( -1.0 );
-    }
+    m_inversion->SetInverted(flipAxis);
 }
 
 //================================================================================================
@@ -76,20 +74,13 @@ AnalogAxis::AnalogAxis
 
 double AnalogAxis::GetAxisValue()
 {
-    double value = 0.0;
+    assert(m_gamepad != nullptr);
 
-    if ( m_gamepad != nullptr )
-    {
-        value = GetRawValue();
-        value = m_deadband->ApplyDeadband( value );
-        value = m_profile->ApplyProfile( value );
-        value = m_scale->Scale( value );
-    }
-    else
-    {
-            string msg = "missing gamepad ";
-            Logger::GetLogger()->LogData(Logger::LOGGER_LEVEL::ERROR_ONCE, "AnalogAxis",  "GetAxisValue", msg );
-    }
+    auto value = GetRawValue();
+    value = m_deadband->ApplyDeadband( value );
+    value = m_profile->ApplyProfile( value );
+    value = m_scale->Scale( value );
+    value = m_inversion->ApplyInversion(value);
     return value;
 }
 
@@ -118,8 +109,7 @@ void AnalogAxis::SetDeadBand
             break;
 
         default:
-            string msg = "invalid deadband specified ";
-            Logger::GetLogger()->LogData(Logger::LOGGER_LEVEL::ERROR_ONCE, "AnalogAxis", "SetDeadBand", msg );
+            assert(type != IDragonGamePad::AXIS_DEADBAND::NONE || type != IDragonGamePad::AXIS_DEADBAND::APPLY_STANDARD_DEADBAND || type != IDragonGamePad::AXIS_DEADBAND::APPLY_SCALED_DEADBAND);
             break;
     }
 
@@ -151,8 +141,7 @@ void AnalogAxis::SetAxisProfile
             break;
 
         default:
-            string msg = "invalid profile specified ";
-            Logger::GetLogger()->LogData(Logger::LOGGER_LEVEL::ERROR_ONCE, "AnalogAxis", "SetAxisProfile", msg );
+            assert(profile != IDragonGamePad::AXIS_PROFILE::CUBED || profile != IDragonGamePad::AXIS_PROFILE::SQUARED || profile != IDragonGamePad::AXIS_PROFILE::LINEAR);
             break;
     }
 }
@@ -171,6 +160,13 @@ void AnalogAxis::SetAxisScaleFactor
 }
 
        
+void AnalogAxis::SetInverted
+(
+    bool    isInverted
+)
+{
+    m_inversion->SetInverted(isInverted);
+}
 //==================================================================================
 /// @brief  Returns the analog input's raw value. If there is a connection problem, 
 ///         0.0 will be returned and a debug message will be written.
@@ -178,16 +174,7 @@ void AnalogAxis::SetAxisScaleFactor
 //==================================================================================
 double AnalogAxis::GetRawValue()
 {
-    double value = 0.0;
-    if ( m_gamepad != nullptr )
-    {
-        value = m_gamepad->GetRawAxis( m_axis );
-    }
-    else
-    {
-        string msg = "gamepad missing ";
-        Logger::GetLogger()->LogData(Logger::LOGGER_LEVEL::ERROR_ONCE, "AnalogAxis", "GetRawValue", msg );
-    }
-    return value;
+    assert(m_gamepad != nullptr);
+    return m_gamepad->GetRawAxis( m_axis );
 }
 

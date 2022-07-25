@@ -69,6 +69,12 @@ class DragonGamepad : public IDragonGamePad
             double scaleFactor
         ) override;
 
+        void SetAxisFlipped
+        (
+            AXIS_IDENTIFIER    			        axis,       // <I> - axis identifier to modify
+            bool                                isFlipped   // <I> - true - invert axis, false - no inversion
+        ) override;
+       
         void SetButtonMode
         (
             BUTTON_IDENTIFIER button,

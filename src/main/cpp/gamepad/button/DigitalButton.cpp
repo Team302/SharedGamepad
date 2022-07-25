@@ -23,13 +23,14 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 //====================================================================================================================================================
 
+#include <assert.h>
+#include <string>
+
 #include <frc/GenericHID.h>
 
 #include <gamepad/button/DigitalButton.h>
 #include <gamepad/IDragonGamePad.h>
 
-#include <utils/Logger.h>
-#include <string>
 using namespace std;
 
 //==================================================================================
@@ -56,37 +57,21 @@ DigitalButton::DigitalButton
 //==================================================================================
 bool DigitalButton::IsButtonPressed() const 
 {
-    bool pressed = false;
-    if ( m_gamepad != nullptr )
-    {
-        pressed = m_gamepad->GetRawButton( m_button );
-    }
-    else
-    {
-        Logger::GetLogger()->LogData(Logger::LOGGER_LEVEL::ERROR_ONCE, string("DigitalButton"), string("IsButtonPressed nullptr"), to_string( m_button ));
-    }
-    
-    return pressed;
+    assert(m_gamepad != nullptr);
+
+    return m_gamepad->GetRawButton( m_button );
 }
 
 bool DigitalButton::WasButtonReleased() const 
 {
-    bool pressed = false;
-    if ( m_gamepad != nullptr )
-    {
-        pressed = m_gamepad->GetRawButtonReleased( m_button );
-    }
-    return pressed;
+    assert(m_gamepad != nullptr);
+    return m_gamepad->GetRawButtonReleased( m_button );
 }
 
 bool DigitalButton::WasButtonPressed() const 
 {
-    bool pressed = false;
-    if ( m_gamepad != nullptr )
-    {
-        pressed = m_gamepad->GetRawButtonPressed( m_button );
-    }
-    return pressed;
+    assert(m_gamepad != nullptr);
+    return  m_gamepad->GetRawButtonPressed( m_button );
 }
 
 

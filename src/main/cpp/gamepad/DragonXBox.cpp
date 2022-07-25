@@ -14,6 +14,7 @@
 // OR OTHER DEALINGS IN THE SOFTWARE.
 //====================================================================================================================================================
 
+#include <assert.h>
 #include <string>
 
 #include <frc/GenericHID.h>
@@ -27,7 +28,6 @@
 #include <gamepad/button/POVButton.h>
 #include <gamepad/button/ToggleButton.h>
 #include <gamepad/DragonXBox.h>
-#include <utils/Logger.h>
 
  using namespace std;
  using namespace frc;
@@ -93,18 +93,9 @@ double DragonXBox::GetAxisValue
     AXIS_IDENTIFIER    axis// <I> - axis identifier to read
 ) const
 {
-    double value = 0.0;
-    if ( m_axis[axis] != nullptr )
-    {
-        value = m_axis[axis]->GetAxisValue();
-    }
-    else
-    {
-        string msg = string("No axis ");
-        msg += to_string(axis);
-        Logger::GetLogger()->LogData(Logger::LOGGER_LEVEL::ERROR_ONCE, string("DragonXBox"), string("DragonXBox::GetAxisValue"), msg );
-    }
-    return value;
+    assert (m_axis[axis] != nullptr);
+    return m_axis[axis]->GetAxisValue();
+
 }
 
 
@@ -237,6 +228,17 @@ void DragonXBox::SetAxisDeadband
     }        
 }
 
+void DragonXBox::SetAxisFlipped
+(
+    AXIS_IDENTIFIER axis,           /// <I> - axis to modify
+    bool            isInverted      /// <I> - deadband option
+) 
+{
+    if ( m_axis[axis] != nullptr )
+    {
+        m_axis[axis]->SetInverted(isInverted);
+    }        
+}
 
 
 //==================================================================================

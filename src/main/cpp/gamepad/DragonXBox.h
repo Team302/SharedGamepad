@@ -1,12 +1,4 @@
 
-/*========================================================================================================
- * DragonXBox.h
- *========================================================================================================
- *
- * File Description:  Wrapper for an XBOX controller used to control the robot in teleop mode.
- *
- *========================================================================================================*/
-
 
 //====================================================================================================================================================
 // Copyright 2022 Lake Orion Robotics FIRST Team 302 
@@ -146,6 +138,12 @@ class DragonXBox : public IDragonGamePad
         (
             AXIS_IDENTIFIER    			        axis,       // <I> - axis identifier to modify
             double                              scaleFactor // <I> - value  (0 < scale <= 1.0) to scale the axis value
+        ) override;
+
+        void SetAxisFlipped
+        (
+            AXIS_IDENTIFIER    			        axis,       // <I> - axis identifier to modify
+            bool                                isFlipped   // <I> - true - invert axis, false - no inversion
         ) override;
        
         //==================================================================================

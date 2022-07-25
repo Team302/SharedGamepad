@@ -1,12 +1,4 @@
 
-/*========================================================================================================
- * IDragonGamePad.h
- *========================================================================================================
- *
- * File Description:  Interface for all input devices for controlling the robot in teleop mode.
- *
- *========================================================================================================*/
-
 //====================================================================================================================================================
 // Copyright 2022 Lake Orion Robotics FIRST Team 302 
 //
@@ -236,6 +228,12 @@ class IDragonGamePad
             double                              scaleFactor // <I> - value  (0 < scale <= 1.0) to scale the axis value
         ) = 0;
 
+
+        virtual void SetAxisFlipped
+        (
+            AXIS_IDENTIFIER    			        axis,       // <I> - axis identifier to modify
+            bool                                isFlipped   // <I> - true - invert axis, false - no inversion
+        ) = 0;
 
         //==================================================================================
         /// <summary>
